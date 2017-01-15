@@ -179,7 +179,7 @@ def plugin_save(plugin_id):
         if input_type == 'radio': new_value = bool(int(new_value))
         conf['plugins'][plugin_id]['config'][configuration] = new_value
     # Persist the conf singleton to disk.
-    save_config(plugin=plugin_id)
+    save_config(plugin_id=plugin_id)
     return conf['plugins']['web_ui']['module'].restart_page()
 
 def plugin_download(plugin_id):
