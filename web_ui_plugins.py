@@ -2,6 +2,7 @@ import os
 import datetime
 import gossip
 from flask import request, abort, render_template_string
+from flaskext.markdown import Markdown
 from bson.json_util import dumps
 from eva.config import save_config
 import eva.util
@@ -19,6 +20,7 @@ configuration_markup = open(dir_path + '/templates/configuration.html').read()
 
 @gossip.register('eva.web_ui.start', provides=['web_ui_plugins'])
 def web_ui_start(app):
+    Markdown(app)
     app.add_url_rule('/plugins', 'plugins', plugins)
     app.add_url_rule('/plugins/save', 'plugins_save', plugins_save, methods=["POST"])
     app.add_url_rule('/plugins/configuration/<plugin_id>', 'plugin_edit', plugin_edit)
@@ -158,11 +160,20 @@ def plugin_edit(plugin_id):
         value = conf['plugins'][plugin_id]['config'][option]
         data = {'name': option, 'value': value, 'input_type': get_input_type(value)}
         options.append(data)
+    # Get README.md file content.
+    readme_markdown = ''
+    for readme_path in [plugin['path'] + '/README.md', plugin['path'] + '/README']:
+        if os.path.exists(readme_path):
+            md_file = open(readme_path)
+            readme_markdown = md_file.read()
+            md_file.close()
+            break
     menu_items = conf['plugins']['web_ui']['module'].ready_menu_items()
     return render_template_string(configuration_markup,
                                   menu_items=menu_items,
                                   plugin=plugin,
-                                  options=options)
+                                  options=options,
+                                  readme_markdown=readme_markdown)
 
 def get_input_type(value):
     if isinstance(value, bool): return 'radio'
