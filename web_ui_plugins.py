@@ -20,7 +20,7 @@ configuration_markup = open(dir_path + '/templates/configuration.html').read()
 
 @gossip.register('eva.web_ui.start', provides=['web_ui_plugins'])
 def web_ui_start(app):
-    Markdown(app)
+    Markdown(app, extensions=['codehilite', 'fenced_code'])
     app.add_url_rule('/plugins', 'plugins', plugins)
     app.add_url_rule('/plugins/save', 'plugins_save', plugins_save, methods=["POST"])
     app.add_url_rule('/plugins/configuration/<plugin_id>', 'plugin_edit', plugin_edit)
@@ -28,10 +28,10 @@ def web_ui_start(app):
     app.add_url_rule('/plugins/download', 'plugins_download', plugins_download, methods=["POST"])
     app.add_url_rule('/plugins/download/<plugin_id>', 'plugin_download', plugin_download)
 
-@gossip.register('eva.web_ui.menu_items', provides=['web_ui_plugins'])
-def web_ui_menu_items():
+@gossip.register('eva.web_ui.menu_items', needs=['web_ui'], provides=['web_ui_plugins'])
+def web_ui_menu_items(menu_items):
     menu_item = {'path': '/plugins', 'title': 'Plugins'}
-    conf['plugins']['web_ui']['config']['menu_items'].append(menu_item)
+    menu_items.append(menu_item)
 
 def get_plugins_table_columns():
     plugins_cols = ['Enabled', 'Name', 'Description', 'Version', 'Dependencies', 'Settings']
@@ -124,7 +124,8 @@ def get_post_available_table_markup():
     return ''.join(post_available_table_markup)
 
 def plugins():
-    menu_items = conf['plugins']['web_ui']['module'].ready_menu_items()
+    menu_items = []
+    gossip.trigger('eva.web_ui.menu_items', menu_items=menu_items)
     pre_plugins_table_markup = get_pre_plugins_table_markup()
     plugins_table_columns = get_plugins_table_columns()
     plugins_table_rows = get_plugins_table_rows()
@@ -168,7 +169,8 @@ def plugin_edit(plugin_id):
             readme_markdown = md_file.read()
             md_file.close()
             break
-    menu_items = conf['plugins']['web_ui']['module'].ready_menu_items()
+    menu_items = []
+    gossip.trigger('eva.web_ui.menu_items', menu_items=menu_items)
     return render_template_string(configuration_markup,
                                   menu_items=menu_items,
                                   plugin=plugin,
