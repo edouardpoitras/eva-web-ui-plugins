@@ -46,7 +46,7 @@ def get_plugins_table_rows():
                        conf['plugins'][plugin_id]['info']['description'],
                        conf['plugins'][plugin_id]['info']['version'],
                        ', '.join(conf['plugins'][plugin_id]['info']['dependencies']),
-                       get_actions_markup(plugin_id)]
+                       get_settings_markup(plugin_id)]
         gossip.trigger('eva.web_ui_plugins.plugins_row', plugin_id=plugin_id, row_data=row_data)
         rows.append(row_data)
     gossip.trigger('eva.web_ui_plugins.plugins_rows', rows=rows)
@@ -96,12 +96,8 @@ def get_enabled_markup(plugin_id):
     markup += '</label></div>'
     return markup
 
-def get_actions_markup(plugin_id):
-    actions_markup = ['<a class="btn btn-primary" href="/plugins/configuration/%s">Config</a>' %plugin_id]
-    gossip.trigger('eva.web_ui_plugins.pre_actions_markup',
-                   plugin_id=plugin_id,
-                   actions_markup=actions_markup)
-    return ''.join(actions_markup)
+def get_settings_markup(plugin_id):
+    return '<a class="btn btn-primary" href="/plugins/configuration/%s">Config</a>' %plugin_id
 
 def get_pre_plugins_table_markup():
     pre_plugins_table_markup = []
