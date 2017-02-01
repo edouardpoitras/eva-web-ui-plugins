@@ -3,6 +3,8 @@ Web UI Plugins
 
 An Eva plugin to allow the configuration and management of Eva plugins though the [Eva Web UI](https://github.com/edouardpoitras/eva-web-ui).
 
+![Web UI Plugins](/screenshot.png?raw=true "https://127.0.0.1:8080/plugins")
+
 ## Installation
 
 Web UI Plugins is installed by default on Eva's first boot. This is to facilitate the installation of other plugins in the Web UI.
